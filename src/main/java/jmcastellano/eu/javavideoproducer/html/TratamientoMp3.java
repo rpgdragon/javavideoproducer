@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.LinkedList;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes;
 import org.jsoup.Jsoup;
 
@@ -21,12 +22,12 @@ import org.jsoup.Jsoup;
  */
 public class TratamientoMp3 {
     private static TratamientoMp3 instance;
-    private volatile String proximacancion;
-    private volatile boolean busquedaactiva;
+    private LinkedList<String> proximacancion;
+    private boolean busquedaactiva;
     private Thread hebra;
     
     private TratamientoMp3(){
-        
+        proximacancion= new LinkedList<String>();
     }
     
     public static TratamientoMp3 getInstance(){
@@ -36,24 +37,45 @@ public class TratamientoMp3 {
         return instance;
     }
     
-    public String getProximacancion(){
-        return proximacancion;
+    public synchronized String getProximacancion(){
+        if(proximacancion!=null && proximacancion.size() > 0){
+            String cancion = proximacancion.removeFirst();
+            System.out.println("Proxima canción:" + cancion);
+            return cancion;
+        }
+        return null;
     }
     
-    public boolean isBusquedaactiva(){
+    public synchronized  boolean isBusquedaactiva(){
         return busquedaactiva;
     }
     
-    public void setBusquedaactiva(boolean busquedaactiva){
+    public synchronized  void setBusquedaactiva(boolean busquedaactiva){
         this.busquedaactiva = busquedaactiva;
     }
     
+    public synchronized int obtener_tamano_canciones(){
+        return proximacancion.size();
+    }
+    
+    private synchronized void anadir_cancion(String cancion){
+        proximacancion.add(cancion);
+    }
+    
+    private synchronized String obtener_ultima_cancion(){
+        return proximacancion.peekLast();
+    }
+    
     public void iniciarBusqueda(){
-        if(!busquedaactiva){
+        if(!isBusquedaactiva()){
             hebra = new Thread(() -> {
-                busquedaactiva = true;
-                proximacancion= busqueda();
-                busquedaactiva = false;
+                setBusquedaactiva(true);
+                while(obtener_tamano_canciones() < 3){
+                    String cancion = busqueda();
+                    anadir_cancion(cancion);
+                    System.out.println("Añadida Canción:" + obtener_ultima_cancion());
+                }
+                setBusquedaactiva(false);
             });
             hebra.start();
 

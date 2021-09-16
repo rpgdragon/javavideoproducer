@@ -16,13 +16,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
+import jmcastellano.eu.javavideoproducer.html.DescargarMensajes;
 import jmcastellano.eu.javavideoproducer.html.Marquesina;
+import static jmcastellano.eu.javavideoproducer.html.Marquesina.RIGHT_TO_LEFT;
 import jmcastellano.eu.javavideoproducer.html.TratamientoMp3;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes.Fichero;
@@ -40,26 +43,40 @@ public class ReproductorCanciones {
     private JLabel textocancion;
     private JLabel fondo;
     private Marquesina marquesina;
-    private int mostrarmarquesina;
+    private final int tiempo;
+    private DescargarMensajes d;
+    private boolean cargainicial = false;
+    
+    public ReproductorCanciones(int tiempo){
+        this.tiempo = tiempo;
+    }
     
     public void iniciar(){
         try{
-            mostrarmarquesina=0;
             TratamientoMp3 gmp3 = TratamientoMp3.getInstance();
-            inicializarVentana();
-            inicial = new Date();
             gmp3.iniciarBusqueda();
-            if(Main.isProduction){
+            d = new DescargarMensajes();
+            d.obtenerMensajes();
+            //vamos a esperar a que al menos este una cancion y los textos
+            while(gmp3.obtener_tamano_canciones() <= 0 || d.getMensajes()==null || d.getMensajes().size() <= 0){
+                //esperamos 1 segundo
+                Thread.sleep(1000);
+            }
+            inicial = new Date();
+            
+            if(Main.isIsProduction()){
                 inicializarFirefox();
-            }
-            Constantes.esperar(1000);
-            if(Main.isProduction){
+                Constantes.esperar(3000);
+                inicializarVentana();
                 inicializarOBS();
+                Constantes.esperar(3000);
             }
-            Constantes.esperar(3000);
+            else{
+                inicializarVentana();
+            }
             do{
                 //todos los ciclos son igual, reproducir cancion y buscar siguiente cancion mientras se reproduce, al finalizar cancion, borrar cancion
-                if(!gmp3.isBusquedaactiva()){
+                if(gmp3.obtener_tamano_canciones() > 0){
                     String cancionactual = gmp3.getProximacancion();
                     gmp3.iniciarBusqueda();
                     reproducirCancion(cancionactual);
@@ -68,15 +85,15 @@ public class ReproductorCanciones {
                 }
                 fechafinal = new Date();
             }
-            while(fechafinal.getTime() - inicial.getTime() < MAX_EJECUCION_MS);
-            if(Main.isProduction){
+            while(fechafinal.getTime() - inicial.getTime() < (MAX_EJECUCION_MS * tiempo));
+            if(Main.isIsProduction()){
                 pararTransmision();
             }
             apagarEquipo();
         }
-        catch(AWTException | IOException e){
+        catch(AWTException | IOException | InterruptedException e){
             e.printStackTrace();
-            //apagarEquipo();
+            apagarEquipo();
         }
     }
     
@@ -109,14 +126,20 @@ public class ReproductorCanciones {
         ventana.setLayout(new BorderLayout());
         ventana.setTitle("Reproductor VG");
         cambiarFondo();
+        cargainicial=true;
         ventana.setVisible(true);
     }
     
     private void cambiarFondo(){
-        String ruta = dameRuta();
-        Fichero f1 = Constantes.randomFichero();
-        fondo = new JLabel(new ImageIcon(ruta + f1.getRuta()));
-        ventana.setContentPane(fondo);
+        if(!cargainicial){
+            String ruta = dameRuta();
+            Fichero f1 = Constantes.randomFichero();
+            fondo = new JLabel(new ImageIcon(ruta + f1.getRuta()));
+            ventana.setContentPane(fondo);
+        }
+        else{
+            cargainicial=false;
+        }
     }
     
     private JLabel getTextocancion(){
@@ -143,37 +166,30 @@ public class ReproductorCanciones {
     }
 
     private void apagarEquipo() {
-       String shutdownCommand;
-        if(Constantes.windowsOrLinux()){
-            shutdownCommand = "shutdown.exe -s -t 0";   
-        }
-        else{
-            shutdownCommand = "shutdown -h now";
-        }
-        try{
-            Runtime.getRuntime().exec(shutdownCommand);
-        }
-        catch(IOException e){}
         System.exit(0);
     }
 
-    private void inicializarFirefox() throws IOException {
+    private void inicializarFirefox() throws IOException, InterruptedException {
+        Process p;
         if(Constantes.windowsOrLinux()){
-             Runtime.getRuntime().exec("C:\\Program Files\\Mozilla Firefox\\firefox.exe https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/");
+             p = Runtime.getRuntime().exec("C:\\Program Files\\Mozilla Firefox\\firefox.exe https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/");
         }
         else{
-            Runtime.getRuntime().exec("firefox https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/");
+            p = Runtime.getRuntime().exec("chromium-browser https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/");
         }
+        p.waitFor(10, TimeUnit.SECONDS);
     }
     
-    private void inicializarOBS() throws IOException {
+    private void inicializarOBS() throws IOException,InterruptedException {
+        Process p;
         if(Constantes.windowsOrLinux()){
-            Runtime.getRuntime().exec("cmd /c start /d \"C:\\Program Files\\obs-studio\\bin\\64bit\\\" obs64.exe --startstreaming --minimize-to-tray");
+            p = Runtime.getRuntime().exec("cmd /c start /d \"C:\\Program Files\\obs-studio\\bin\\64bit\\\" obs64.exe --startstreaming --minimize-to-tray");
         }
         else{
              //TODO revisar
-            Runtime.getRuntime().exec("obs");
+            p = Runtime.getRuntime().exec("obs --startstreaming --minimize-to-tray");
         }
+        p.waitFor(10, TimeUnit.SECONDS);
     }
     
     private void pararTransmision() throws AWTException {
@@ -183,26 +199,22 @@ public class ReproductorCanciones {
 
     private void actualizarCancionVentana(String cancionactual) {
         ventana.setLayout(null);
-         if(mostrarmarquesina==0){
-            ventana.add(getMarquesina());
-            getMarquesina().setText("");
-            getMarquesina().setText("No te olvides de suscribirte para seguir las nuevas novedades");
-        }
         ventana.add(getTextocancion());
         getTextocancion().setText(cancionactual);
-        mostrarmarquesina++;
-        mostrarmarquesina=mostrarmarquesina%5;
+        ventana.add(getMarquesina());
+        getMarquesina().setText(d.dameMensajeAleatorio());
+        
     }
+
     
     private Marquesina getMarquesina(){
         if(marquesina==null){
-            marquesina = new Marquesina("",SwingConstants.CENTER);
+            marquesina = new Marquesina("",Marquesina.RIGHT_TO_LEFT,10);
             Font font = new Font("SansSerif", Font.BOLD, 20);
             marquesina.setFont(font);
             marquesina.setBackground(Color.WHITE);
             marquesina.setOpaque(true);
-            marquesina.setBounds(300, 60, 600, 40);
-            marquesina.setText("");
+            marquesina.setBounds(300, 60, 650, 40);
         }
         return marquesina;
     }

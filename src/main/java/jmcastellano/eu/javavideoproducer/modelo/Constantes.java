@@ -19,12 +19,13 @@ public class Constantes {
     public static final String HREF= "href=";
     public static final String SPAN_CLASS="<span class";
     public static final String CADENA_URL_CANCION="<p><a style=\"color: #21363f;\" href=\"https://vgmsite.com/soundtracks/";
-    public static final String RUTA_UNIX="/tmp/";
+    public static final String RUTA_UNIX="/home/pi/tmp/";
     public static final String RUTA_WINDOWS="C:\\Users\\rpgdragon\\tmp\\";
+    public static final String URL_MENSAJES="https://raw.githubusercontent.com/rpgdragon/javavideoproducer/master/mensajes.txt";
 
 
     public enum Fichero{
-        BG1("bg1.jpg"), BG2("bg2.jpg"), BG3("bg3.jpg"), BG4("bg4.jpg"), BG5("bg5.jpg"), BG6("bg6.jpg"), BG7("bg7.jpg");
+        BG1("bg1.jpg"), BG2("bg2.jpg"), BG3("bg3.jpg"), BG4("bg4.jpg"), BG5("bg5.jpg"), BG6("bg6.jpg"), BG7("bg7.jpg"), BG8("bg8.jpg"), BG9("bg9.jpg"), BG10("bg10.jpg"), BG11("bg11.jpg");
         
         private Fichero(String ruta){
             this.ruta = ruta;
@@ -67,6 +68,14 @@ public class Constantes {
                 return Fichero.BG6;
             case 7:
                 return Fichero.BG7;
+            case 8:
+                return Fichero.BG8;
+            case 9:
+                return Fichero.BG9;
+            case 10:
+                return Fichero.BG10;
+            case 11:
+                return Fichero.BG11;
         }
         return Fichero.BG1;
     }

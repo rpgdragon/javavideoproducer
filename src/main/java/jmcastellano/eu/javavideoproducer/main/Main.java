@@ -11,14 +11,28 @@ package jmcastellano.eu.javavideoproducer.main;
  */
 public class Main {
     
-    public static boolean isProduction = true;
+    private static boolean isProduction = true;
     
     public static void main(String[] args){
+        int tiempo = 3;
         if(args!=null && args.length > 0 && args[0].equals("false")){
             isProduction = false;
+            if(args.length > 1){
+                tiempo = Integer.parseInt(args[1]);
+            }
         }
-       ReproductorCanciones rc = new ReproductorCanciones();
+       ReproductorCanciones rc = new ReproductorCanciones(tiempo);
        rc.iniciar();
     }
+
+    public static boolean isIsProduction() {
+        return isProduction;
+    }
+
+    public static void setIsProduction(boolean isProduction) {
+        Main.isProduction = isProduction;
+    }
+    
+    
    
 }
