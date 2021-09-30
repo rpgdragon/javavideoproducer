@@ -1,0 +1,55 @@
+@options
+@packages
+@argfile
+-classpath
+'C:/Users/rpgdragon/.m2/repository/org/jsoup/jsoup/1.14.1/jsoup-1.14.1.jar;C:/Users/rpgdragon/.m2/repository/javazoom/jlayer/1.0.1/jlayer-1.0.1.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'1.8'
+-sourcepath
+'C:/Users/rpgdragon/Documents/NetBeansProjects/javavideoproducer/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2021. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/Users/rpgdragon/Documents/NetBeansProjects/javavideoproducer/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'javavideoproducer 1.0-SNAPSHOT API'
+-linkoffline
+'https://docs.oracle.com/javase/8/docs/api' 'C:/Users/rpgdragon/Documents/NetBeansProjects/javavideoproducer/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'javavideoproducer 1.0-SNAPSHOT API'
+jmcastellano.eu.javavideoproducer.html
+jmcastellano.eu.javavideoproducer.main
+jmcastellano.eu.javavideoproducer.modelo
+'C:/Users/rpgdragon/Documents/NetBeansProjects/javavideoproducer/src/main/java/jmcastellano/eu/javavideoproducer/html/DescargarMensajes.java'
+'C:/Users/rpgdragon/Documents/NetBeansProjects/javavideoproducer/src/main/java/jmcastellano/eu/javavideoproducer/html/Marquesina.java'
+'C:/Users/rpgdragon/Documents/NetBeansProjects/javavideoproducer/src/main/java/jmcastellano/eu/javavideoproducer/html/TratamientoMp3.java'
+'C:/Users/rpgdragon/Documents/NetBeansProjects/javavideoproducer/src/main/java/jmcastellano/eu/javavideoproducer/main/Main.java'
+'C:/Users/rpgdragon/Documents/NetBeansProjects/javavideoproducer/src/main/java/jmcastellano/eu/javavideoproducer/main/ReproductorCanciones.java'
+'C:/Users/rpgdragon/Documents/NetBeansProjects/javavideoproducer/src/main/java/jmcastellano/eu/javavideoproducer/modelo/Constantes.java'
+C:\Users\rpgdragon\.m2\repository\org\jsoup\jsoup\1.14.1\jsoup-1.14.1.jar = 1628937449374
+C:\Users\rpgdragon\.m2\repository\javazoom\jlayer\1.0.1\jlayer-1.0.1.jar = 1628961928094
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\src\main\java = 1628937297640
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\allclasses-frame.html = 1631622743378
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\allclasses-noframe.html = 1631622743379
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\constant-values.html = 1631622743303
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\deprecated-list.html = 1631622743375
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\help-doc.html = 1631622743386
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\index-all.html = 1631622743372
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\index.html = 1631622743381
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\overview-frame.html = 1631622743267
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\overview-summary.html = 1631622743383
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\overview-tree.html = 1631622743361
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\package-list = 1631622743264
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\script.js = 1631622743388
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\serialized-form.html = 1631622743312
+C:\Users\rpgdragon\Documents\NetBeansProjects\javavideoproducer\target\apidocs\stylesheet.css = 1631610534147
