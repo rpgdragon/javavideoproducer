@@ -20,7 +20,8 @@ public class Constantes {
     public static final String SPAN_CLASS="<span class";
     public static final String CADENA_URL_CANCION="<p><a style=\"color: #21363f;\" href=\"https://vgmsite.com/soundtracks/";
     public static final String RUTA_UNIX="/home/pi/tmp/";
-    public static final String RUTA_WINDOWS="C:\\Users\\rpgdragon\\tmp\\";
+    private static final String RUTA_WINDOWS="C:\\Users\\%%usuario%%\\tmp\\";
+    public static final String URL_STREAMING="https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/";
     public static final String URL_MENSAJES="https://raw.githubusercontent.com/rpgdragon/javavideoproducer/master/mensajes.txt";
 
 
@@ -44,10 +45,7 @@ public class Constantes {
     
     public static boolean windowsOrLinux(){
         String os = System.getProperty("os.name");
-        if(os.toLowerCase().contains("windows")){
-            return true;
-        }
-        return false;
+        return os.toLowerCase().contains("windows");
     }
     
     public static Fichero randomFichero(){
@@ -85,5 +83,9 @@ public class Constantes {
             Thread.sleep(i);
         }
         catch(InterruptedException e){}
+    }
+    
+    public static String dameRutaWindows(){
+        return RUTA_WINDOWS.replaceAll("%%usuario%%",  System.getProperty("user.name"));
     }
 }

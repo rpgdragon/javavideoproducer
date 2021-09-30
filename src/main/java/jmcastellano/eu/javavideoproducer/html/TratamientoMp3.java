@@ -22,12 +22,12 @@ import org.jsoup.Jsoup;
  */
 public class TratamientoMp3 {
     private static TratamientoMp3 instance;
-    private LinkedList<String> proximacancion;
+    private final LinkedList<String> proximacancion;
     private boolean busquedaactiva;
     private Thread hebra;
     
     private TratamientoMp3(){
-        proximacancion= new LinkedList<String>();
+        proximacancion= new LinkedList<>();
     }
     
     public static TratamientoMp3 getInstance(){
@@ -113,20 +113,20 @@ public class TratamientoMp3 {
         URLConnection conn = new URL(url).openConnection();
         InputStream is = conn.getInputStream();
         
-        String ruta = null;
+        String ruta;
         if(Constantes.windowsOrLinux()){
-            ruta = Constantes.RUTA_WINDOWS;
+            ruta = Constantes.dameRutaWindows();
         }
         else{
             ruta = Constantes.RUTA_UNIX;
         }
-        OutputStream outstream = new FileOutputStream(new File(ruta + nombre));
-        byte[] buffer = new byte[4096];
-        int len;
-        while ((len = is.read(buffer)) > 0) {
-            outstream.write(buffer, 0, len);
+        try (OutputStream outstream = new FileOutputStream(new File(ruta + nombre))) {
+            byte[] buffer = new byte[4096];
+            int len;
+            while ((len = is.read(buffer)) > 0) {
+                outstream.write(buffer, 0, len);
+            }
         }
-        outstream.close();
     }
     
 }

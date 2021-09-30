@@ -27,21 +27,18 @@ public class DescargarMensajes {
     public void obtenerMensajes(){
         if(mensajes==null || mensajes.isEmpty()){
             enEjecucion = true;
-            mensajes = new ArrayList<String>();
-            Thread t = new Thread(new Runnable(){
-                @Override
-                public void run() {
-                    try { 
-                        URL url = new URL(Constantes.URL_MENSAJES);
-                        Scanner s = new Scanner(url.openStream(),"UTF-8");
-                        while(s.hasNextLine()){
-                            String cad = s.nextLine();
-                            mensajes.add(cad);
-                        }
-                    } catch(Exception e){}
-                    finally{
-                        enEjecucion = false;
+            mensajes = new ArrayList<>();
+            Thread t = new Thread(() -> {
+                try {
+                    URL url = new URL(Constantes.URL_MENSAJES);
+                    Scanner s = new Scanner(url.openStream(),"UTF-8");
+                    while(s.hasNextLine()){
+                        String cad = s.nextLine();
+                        mensajes.add(cad);
                     }
+                } catch(Exception e){}
+                finally{
+                    enEjecucion = false;
                 }
             });
             t.start();

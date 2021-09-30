@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
@@ -25,7 +26,6 @@ import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 import jmcastellano.eu.javavideoproducer.html.DescargarMensajes;
 import jmcastellano.eu.javavideoproducer.html.Marquesina;
-import static jmcastellano.eu.javavideoproducer.html.Marquesina.RIGHT_TO_LEFT;
 import jmcastellano.eu.javavideoproducer.html.TratamientoMp3;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes.Fichero;
@@ -53,6 +53,7 @@ public class ReproductorCanciones {
     
     public void iniciar(){
         try{
+            comprobarCarpetaTemporal();
             TratamientoMp3 gmp3 = TratamientoMp3.getInstance();
             gmp3.iniciarBusqueda();
             d = new DescargarMensajes();
@@ -132,9 +133,9 @@ public class ReproductorCanciones {
     
     private void cambiarFondo(){
         if(!cargainicial){
-            String ruta = dameRuta();
             Fichero f1 = Constantes.randomFichero();
-            fondo = new JLabel(new ImageIcon(ruta + f1.getRuta()));
+            URL url = this.getClass().getResource("/images/" + f1.getRuta());
+            fondo = new JLabel(new ImageIcon(url));
             ventana.setContentPane(fondo);
         }
         else{
@@ -155,9 +156,9 @@ public class ReproductorCanciones {
     }
 
     private String dameRuta() {
-        String ruta = null;
+        String ruta;
         if(Constantes.windowsOrLinux()){
-            ruta = Constantes.RUTA_WINDOWS;
+            ruta = Constantes.dameRutaWindows();
         }
         else{
             ruta = Constantes.RUTA_UNIX;
@@ -172,10 +173,10 @@ public class ReproductorCanciones {
     private void inicializarFirefox() throws IOException, InterruptedException {
         Process p;
         if(Constantes.windowsOrLinux()){
-             p = Runtime.getRuntime().exec("C:\\Program Files\\Mozilla Firefox\\firefox.exe https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/");
+             p = Runtime.getRuntime().exec("firefox " + Constantes.URL_STREAMING);
         }
         else{
-            p = Runtime.getRuntime().exec("chromium-browser https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/");
+            p = Runtime.getRuntime().exec("chromium-browser " + Constantes.URL_STREAMING);
         }
         p.waitFor(10, TimeUnit.SECONDS);
     }
@@ -217,5 +218,20 @@ public class ReproductorCanciones {
             marquesina.setBounds(300, 60, 650, 40);
         }
         return marquesina;
+    }
+
+    private void comprobarCarpetaTemporal() {
+        //nos aseguramos de que el directorio tmp existe para el SO actual
+        String rutatmp;
+        if(Constantes.windowsOrLinux()){
+            rutatmp = Constantes.dameRutaWindows();
+        }
+        else{
+            rutatmp = Constantes.RUTA_UNIX;
+        }
+        File f = new File(rutatmp);
+        if(!f.exists() || !f.isDirectory()){
+            f.mkdir();
+        }
     }
 }
