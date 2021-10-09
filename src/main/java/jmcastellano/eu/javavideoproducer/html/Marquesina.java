@@ -7,6 +7,7 @@ package jmcastellano.eu.javavideoproducer.html;
 
 import java.awt.Graphics;
 import javax.swing.JLabel;
+import java.awt.Color;
 
 /**
  *
@@ -27,7 +28,9 @@ public class Marquesina extends JLabel {
   
    @Override  
    protected void paintComponent(Graphics g) {
+     g.setColor(Color.white);
      g.clearRect(0, 0, getWidth(), getHeight());
+     g.setColor(Color.black);
      if (Option == LEFT_TO_RIGHT) {  
        g.translate((int) ((System.currentTimeMillis() / Speed) % (getWidth() * 2) - getWidth()), 0);  
      } else if (Option == RIGHT_TO_LEFT) {  

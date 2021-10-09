@@ -38,7 +38,7 @@ public class ReproductorCanciones {
     
     private Date inicial;
     private Date fechafinal;
-    private static final long MAX_EJECUCION_MS = 3600000;
+    private static final long MAX_EJECUCION_MS = 36000;
     private JFrame ventana;
     private JLabel textocancion;
     private JLabel fondo;
@@ -67,7 +67,7 @@ public class ReproductorCanciones {
             
             if(Main.isIsProduction()){
                 inicializarFirefox();
-                Constantes.esperar(3000);
+                Constantes.esperar(60000);
                 inicializarVentana();
                 inicializarOBS();
                 Constantes.esperar(3000);
@@ -94,7 +94,10 @@ public class ReproductorCanciones {
         }
         catch(AWTException | IOException | InterruptedException e){
             e.printStackTrace();
-            apagarEquipo();
+            try{
+                apagarEquipo();
+            }
+            catch(Exception e1){}
         }
     }
     
@@ -122,7 +125,7 @@ public class ReproductorCanciones {
     
     private void inicializarVentana(){
         ventana = new JFrame();
-        ventana.setSize(1200, 675);
+        ventana.setSize(640, 360);
         ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         ventana.setLayout(new BorderLayout());
         ventana.setTitle("Reproductor VG");
@@ -146,11 +149,11 @@ public class ReproductorCanciones {
     private JLabel getTextocancion(){
         if(textocancion==null){
             textocancion=new JLabel("", SwingConstants.CENTER);
-            Font font = new Font("SansSerif", Font.BOLD, 30);
+            Font font = new Font("SansSerif", Font.BOLD, 20);
             textocancion.setFont(font);
             textocancion.setBackground(Color.WHITE);
             textocancion.setOpaque(true);
-            textocancion.setBounds(0, 575, 1200, 40);
+            textocancion.setBounds(0, 290, 640, 25);
         }
         return textocancion;
     }
@@ -166,18 +169,20 @@ public class ReproductorCanciones {
         return ruta;
     }
 
-    private void apagarEquipo() {
-        System.exit(0);
+    private void apagarEquipo() throws IOException, InterruptedException {
+        Process p;
+        if(Constantes.windowsOrLinux()){
+            p = Runtime.getRuntime().exec("shutdown /s");
+        }
+        else{
+            p = Runtime.getRuntime().exec("sudo shutdown -h now");
+        }
+        p.waitFor(10, TimeUnit.SECONDS);
     }
 
     private void inicializarFirefox() throws IOException, InterruptedException {
         Process p;
-        if(Constantes.windowsOrLinux()){
-             p = Runtime.getRuntime().exec("firefox " + Constantes.URL_STREAMING);
-        }
-        else{
-            p = Runtime.getRuntime().exec("chromium-browser " + Constantes.URL_STREAMING);
-        }
+        p = Runtime.getRuntime().exec("firefox " + Constantes.URL_STREAMING);
         p.waitFor(10, TimeUnit.SECONDS);
     }
     
@@ -195,7 +200,7 @@ public class ReproductorCanciones {
     
     private void pararTransmision() throws AWTException {
         Robot robot = new Robot();
-        robot.keyPress(KeyEvent.VK_F11);
+        robot.keyPress(KeyEvent.VK_F7);
     }
 
     private void actualizarCancionVentana(String cancionactual) {
@@ -211,11 +216,11 @@ public class ReproductorCanciones {
     private Marquesina getMarquesina(){
         if(marquesina==null){
             marquesina = new Marquesina("",Marquesina.RIGHT_TO_LEFT,10);
-            Font font = new Font("SansSerif", Font.BOLD, 20);
+            Font font = new Font("SansSerif", Font.BOLD, 15);
             marquesina.setFont(font);
             marquesina.setBackground(Color.WHITE);
             marquesina.setOpaque(true);
-            marquesina.setBounds(300, 60, 650, 40);
+            marquesina.setBounds(50, 50, 540, 20);
         }
         return marquesina;
     }
