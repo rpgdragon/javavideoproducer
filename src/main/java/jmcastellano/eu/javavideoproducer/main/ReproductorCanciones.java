@@ -38,7 +38,7 @@ public class ReproductorCanciones {
     
     private Date inicial;
     private Date fechafinal;
-    private static final long MAX_EJECUCION_MS = 36000;
+    private static final long MAX_EJECUCION_MS = 3600000;
     private JFrame ventana;
     private JLabel textocancion;
     private JLabel fondo;
