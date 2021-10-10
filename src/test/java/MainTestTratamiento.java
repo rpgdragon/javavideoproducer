@@ -16,7 +16,7 @@ public class MainTestTratamiento {
     public static void main(String[] args){
         TratamientoMp3 gmp3 = TratamientoMp3.getInstance();
         while(true){
-            System.out.println(gmp3.busqueda());
+            System.out.println(gmp3.busqueda().getNombre_cancion());
         }
     }
     

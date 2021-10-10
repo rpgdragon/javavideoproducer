@@ -13,7 +13,9 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedList;
+import jmcastellano.eu.javavideoproducer.modelo.Cancion;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes;
+import jmcastellano.eu.javavideoproducer.utils.Logger;
 import org.jsoup.Jsoup;
 
 /**
@@ -22,7 +24,7 @@ import org.jsoup.Jsoup;
  */
 public class TratamientoMp3 {
     private static TratamientoMp3 instance;
-    private final LinkedList<String> proximacancion;
+    private final LinkedList<Cancion> proximacancion;
     private boolean busquedaactiva;
     private Thread hebra;
     
@@ -37,10 +39,10 @@ public class TratamientoMp3 {
         return instance;
     }
     
-    public synchronized String getProximacancion(){
+    public synchronized Cancion getProximacancion(){
         if(proximacancion!=null && proximacancion.size() > 0){
-            String cancion = proximacancion.removeFirst();
-            System.out.println("Proxima canción:" + cancion);
+            Cancion cancion = proximacancion.removeFirst();
+            Logger.getInstance().outString("Proxima canción:" + cancion.getNombre_cancion());
             return cancion;
         }
         return null;
@@ -58,11 +60,11 @@ public class TratamientoMp3 {
         return proximacancion.size();
     }
     
-    private synchronized void anadir_cancion(String cancion){
+    private synchronized void anadir_cancion(Cancion cancion){
         proximacancion.add(cancion);
     }
     
-    private synchronized String obtener_ultima_cancion(){
+    private synchronized Cancion obtener_ultima_cancion(){
         return proximacancion.peekLast();
     }
     
@@ -71,9 +73,9 @@ public class TratamientoMp3 {
             hebra = new Thread(() -> {
                 setBusquedaactiva(true);
                 while(obtener_tamano_canciones() < 3){
-                    String cancion = busqueda();
+                    Cancion cancion = busqueda();
                     anadir_cancion(cancion);
-                    System.out.println("Añadida Canción:" + obtener_ultima_cancion());
+                   Logger.getInstance().outString("Añadida Canción:" + cancion.getNombre_cancion());
                 }
                 setBusquedaactiva(false);
             });
@@ -82,15 +84,21 @@ public class TratamientoMp3 {
         }
     }
     
-    public String busqueda(){
+    public Cancion busqueda(){
         while(true){
             try{
                 String html = Jsoup.connect(Constantes.URL_VIDEOJUEGOS).get().html();
                 //hay que buscar el nombre de la cancion y la url de descargar
-                int posicion = html.indexOf(Constantes.CADENA_NOMBRE_CANCION);
+                int posicion = html.indexOf(Constantes.CADENA_NOMBRE_ALBUM);
                 html = html.substring(posicion);
                 posicion = html.indexOf(Constantes.B);
+                html = html.substring(posicion);
                 int posicion2 = html.indexOf(Constantes.CIERRE_B);
+                String nombrealbum = html.substring(3, posicion2);
+                posicion = html.indexOf(Constantes.CADENA_NOMBRE_CANCION);
+                html = html.substring(posicion);
+                posicion = html.indexOf(Constantes.B);
+                posicion2 = html.indexOf(Constantes.CIERRE_B);
                 String nombrecancion = html.substring(posicion+3, posicion2);
                 posicion = html.indexOf(Constantes.HREF);
                 posicion2 = html.indexOf(Constantes.SPAN_CLASS);
@@ -103,9 +111,10 @@ public class TratamientoMp3 {
                     nombrecancion+=".mp3";
                 }
                 descargar(url, nombrecancion);
-                return nombrecancion;
+                Cancion c = new Cancion(nombrealbum, nombrecancion);
+                return c;
             }
-            catch(IOException e){}
+            catch(Exception e){}
         }
     }
     

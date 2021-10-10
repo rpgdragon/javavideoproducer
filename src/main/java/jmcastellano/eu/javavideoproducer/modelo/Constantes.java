@@ -13,6 +13,7 @@ import java.util.Random;
  */
 public class Constantes {
     public static final String URL_VIDEOJUEGOS="https://downloads.khinsider.com/random-song";
+    public static final String CADENA_NOMBRE_ALBUM="Album name:";
     public static final String CADENA_NOMBRE_CANCION="<br> Song name: <b>";
     public static final String B = "<b>";
     public static final String CIERRE_B = "</b>";
@@ -23,7 +24,9 @@ public class Constantes {
     private static final String RUTA_WINDOWS="C:\\Users\\%%usuario%%\\tmp\\";
     public static final String URL_STREAMING="https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/";
     public static final String URL_MENSAJES="https://raw.githubusercontent.com/rpgdragon/javavideoproducer/master/mensajes.txt";
-
+    public static final String FINALIZANDO_TRANSMISION="Finalizando programa de radio";
+    public static final String SUSCRIBETE="No te olvides de suscribirte. Nos vemos.";
+    public static final String DETENIENDO = "Deteniendo Transmisión";
 
     public enum Fichero{
         BG1("bg1.jpg"), BG2("bg2.jpg"), BG3("bg3.jpg"), BG4("bg4.jpg"), BG5("bg5.jpg"), BG6("bg6.jpg"), BG7("bg7.jpg"), BG8("bg8.jpg"), BG9("bg9.jpg"), BG10("bg10.jpg"), BG11("bg11.jpg");

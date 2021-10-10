@@ -5,6 +5,8 @@
  */
 package jmcastellano.eu.javavideoproducer.main;
 
+import jmcastellano.eu.javavideoproducer.utils.Logger;
+
 /**
  *
  * @author rpgdragon
@@ -21,6 +23,7 @@ public class Main {
         if(args!=null && args.length > 1){
             tiempo = Integer.parseInt(args[1]);
         }
+       Logger.getInstance().outString("Iniciando Javavideoproducer:" + tiempo + " " + isProduction);
        ReproductorCanciones rc = new ReproductorCanciones(tiempo);
        rc.iniciar();
     }
@@ -32,6 +35,8 @@ public class Main {
     public static void setIsProduction(boolean isProduction) {
         Main.isProduction = isProduction;
     }
+    
+    
     
     
    

@@ -16,7 +16,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -27,8 +27,10 @@ import javazoom.jl.player.Player;
 import jmcastellano.eu.javavideoproducer.html.DescargarMensajes;
 import jmcastellano.eu.javavideoproducer.html.Marquesina;
 import jmcastellano.eu.javavideoproducer.html.TratamientoMp3;
+import jmcastellano.eu.javavideoproducer.modelo.Cancion;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes.Fichero;
+import jmcastellano.eu.javavideoproducer.utils.Logger;
 
 /**
  *
@@ -36,9 +38,10 @@ import jmcastellano.eu.javavideoproducer.modelo.Constantes.Fichero;
  */
 public class ReproductorCanciones {
     
-    private Date inicial;
-    private Date fechafinal;
+    private Calendar inicial;
+    private Calendar fechafinal;
     private static final long MAX_EJECUCION_MS = 3600000;
+    private static final long TIEMPO_DESCONEXION = 10000;
     private JFrame ventana;
     private JLabel textocancion;
     private JLabel fondo;
@@ -53,6 +56,7 @@ public class ReproductorCanciones {
     
     public void iniciar(){
         try{
+            Logger.getInstance().outString("MAX_EJECUCION_MS: " + MAX_EJECUCION_MS );
             comprobarCarpetaTemporal();
             TratamientoMp3 gmp3 = TratamientoMp3.getInstance();
             gmp3.iniciarBusqueda();
@@ -63,7 +67,7 @@ public class ReproductorCanciones {
                 //esperamos 1 segundo
                 Thread.sleep(1000);
             }
-            inicial = new Date();
+            inicial = Calendar.getInstance();
             
             if(Main.isIsProduction()){
                 inicializarFirefox();
@@ -75,18 +79,33 @@ public class ReproductorCanciones {
             else{
                 inicializarVentana();
             }
-            do{
-                //todos los ciclos son igual, reproducir cancion y buscar siguiente cancion mientras se reproduce, al finalizar cancion, borrar cancion
-                if(gmp3.obtener_tamano_canciones() > 0){
-                    String cancionactual = gmp3.getProximacancion();
-                    gmp3.iniciarBusqueda();
-                    reproducirCancion(cancionactual);
-                    borrarFichero(cancionactual);
-                    cambiarFondo();
+            //antes de seguir, vamos a esperar a que hayan al menos dos canciones
+            while(gmp3.obtener_tamano_canciones()<2){
+                try{
+                    Thread.sleep(500);
                 }
-                fechafinal = new Date();
+                catch(Exception e){}
             }
-            while(fechafinal.getTime() - inicial.getTime() < (MAX_EJECUCION_MS * tiempo));
+            
+            do{
+                try{
+                        //todos los ciclos son igual, reproducir cancion y buscar siguiente cancion mientras se reproduce, al finalizar cancion, borrar cancion
+                        if(gmp3.obtener_tamano_canciones() > 0){
+                            Cancion cancionactual = gmp3.getProximacancion();
+                            gmp3.iniciarBusqueda();
+                            reproducirCancion(cancionactual);
+                            borrarFichero(cancionactual);
+                            cambiarFondo();
+                        }
+                        fechafinal = Calendar.getInstance();
+                    }
+                    catch(Exception e){
+                        Logger.getInstance().outString(e.getMessage());
+                    }
+                }
+                while(fechafinal.getTimeInMillis() - inicial.getTimeInMillis() < (MAX_EJECUCION_MS * tiempo));
+            
+            indicarFinTransmision();
             if(Main.isIsProduction()){
                 pararTransmision();
             }
@@ -102,12 +121,12 @@ public class ReproductorCanciones {
     }
     
     
-    private void reproducirCancion(String cancionactual){
+    private void reproducirCancion(Cancion cancionactual){
         //iniciamos la reproduccion
         String ruta = dameRuta();
         FileInputStream stream;
         try {
-            stream = new FileInputStream(ruta + cancionactual);
+            stream = new FileInputStream(ruta + cancionactual.getNombre_cancion());
             Player player = new Player(stream);
             //vamos a cambiar el Label para mostrar el nombre de la cancion
             actualizarCancionVentana(cancionactual);
@@ -116,9 +135,9 @@ public class ReproductorCanciones {
         } catch (FileNotFoundException | JavaLayerException ex) {}
     }
     
-    private void borrarFichero(String cancionactual){
+    private void borrarFichero(Cancion cancionactual){
         String ruta = dameRuta();
-        File fichero = new File(ruta + cancionactual);
+        File fichero = new File(ruta + cancionactual.getNombre_cancion());
         fichero.delete();
     }
     
@@ -149,7 +168,7 @@ public class ReproductorCanciones {
     private JLabel getTextocancion(){
         if(textocancion==null){
             textocancion=new JLabel("", SwingConstants.CENTER);
-            Font font = new Font("SansSerif", Font.BOLD, 20);
+            Font font = new Font("SansSerif", Font.BOLD, 10);
             textocancion.setFont(font);
             textocancion.setBackground(Color.WHITE);
             textocancion.setOpaque(true);
@@ -170,6 +189,10 @@ public class ReproductorCanciones {
     }
 
     private void apagarEquipo() throws IOException, InterruptedException {
+        Logger.getInstance().outString("Se procede apagar equipo");
+        if(!Main.isIsProduction()){
+            System.exit(0);
+        }
         Process p;
         if(Constantes.windowsOrLinux()){
             p = Runtime.getRuntime().exec("shutdown /s");
@@ -199,14 +222,15 @@ public class ReproductorCanciones {
     }
     
     private void pararTransmision() throws AWTException {
+        Logger.getInstance().outString(Constantes.DETENIENDO);  
         Robot robot = new Robot();
         robot.keyPress(KeyEvent.VK_F7);
     }
 
-    private void actualizarCancionVentana(String cancionactual) {
+    private void actualizarCancionVentana(Cancion cancionactual) {
         ventana.setLayout(null);
         ventana.add(getTextocancion());
-        getTextocancion().setText(cancionactual);
+        getTextocancion().setText(cancionactual.getNombre_album() + " - " + cancionactual.getNombre_cancion());
         ventana.add(getMarquesina());
         getMarquesina().setText(d.dameMensajeAleatorio());
         
@@ -238,5 +262,28 @@ public class ReproductorCanciones {
         if(!f.exists() || !f.isDirectory()){
             f.mkdir();
         }
+        //ahora vamos a proceder a borrar todos los ficheros que haya en la carpeta temporal
+        for(File file: f.listFiles()){
+            if(!file.isDirectory()){
+                file.delete();
+            }
+        }
+    }
+
+    private void indicarFinTransmision() {
+        Logger.getInstance().outString(Constantes.FINALIZANDO_TRANSMISION);
+        ventana.setLayout(null);
+        ventana.add(getTextocancion());
+        getTextocancion().setText(Constantes.FINALIZANDO_TRANSMISION);
+        ventana.add(getMarquesina());
+        getMarquesina().setText(Constantes.SUSCRIBETE);
+        Calendar c1 = Calendar.getInstance();
+        long t2 = 0;
+        long t1 = c1.getTimeInMillis();
+        do{
+            try{ Thread.sleep(100); } catch(Exception e){}
+            Calendar c2 = Calendar.getInstance();
+            t2 = c2.getTimeInMillis();
+        }while(t2-t1 < TIEMPO_DESCONEXION);
     }
 }
