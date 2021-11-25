@@ -25,8 +25,15 @@ public class Constantes {
     public static final String URL_STREAMING="https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/";
     public static final String URL_MENSAJES="https://raw.githubusercontent.com/rpgdragon/javavideoproducer/master/mensajes.txt";
     public static final String FINALIZANDO_TRANSMISION="Finalizando programa de radio";
+    public static final String INICIANDO_TRANSMISION="Iniciando programa de radio";
     public static final String SUSCRIBETE="No te olvides de suscribirte. Nos vemos.";
+    public static final String SUSCRIBETEINICIO="Empezamos a emitir en breve, por favor aguarde";
     public static final String DETENIENDO = "Deteniendo Transmisión";
+    public static final long MAX_EJECUCION_MS = 3600000;
+    public static final long TIEMPO_DESCONEXION = 10000;
+    public static final long TIEMPO_ARRANQUE = 20000;
+    public static final int MIN_DURACION=10;
+    public static final int MAX_DURACION=600;
 
     public enum Fichero{
         BG1("bg1.jpg"), BG2("bg2.jpg"), BG3("bg3.jpg"), BG4("bg4.jpg"), BG5("bg5.jpg"), BG6("bg6.jpg"), BG7("bg7.jpg"), BG8("bg8.jpg"), BG9("bg9.jpg"), BG10("bg10.jpg"), BG11("bg11.jpg");

@@ -13,9 +13,11 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.LinkedList;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import jmcastellano.eu.javavideoproducer.modelo.Cancion;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes;
 import jmcastellano.eu.javavideoproducer.utils.Logger;
+import jmcastellano.eu.javavideoproducer.utils.Utils;
 import org.jsoup.Jsoup;
 
 /**
@@ -72,7 +74,7 @@ public class TratamientoMp3 {
         if(!isBusquedaactiva()){
             hebra = new Thread(() -> {
                 setBusquedaactiva(true);
-                while(obtener_tamano_canciones() < 3){
+                while(obtener_tamano_canciones() < 5){
                     Cancion cancion = busqueda();
                     anadir_cancion(cancion);
                    Logger.getInstance().outString("Añadida Canción:" + cancion.getNombre_cancion());
@@ -112,6 +114,15 @@ public class TratamientoMp3 {
                 }
                 descargar(url, nombrecancion);
                 Cancion c = new Cancion(nombrealbum, nombrecancion);
+                //antes de devolver hay que ver lo que dura la cancion
+                int duracion = c.calcularDuracion();
+                if(duracion < Constantes.MIN_DURACION || duracion > Constantes.MAX_DURACION){
+                    //canciones que duren menos de MIN DURACION segundos o más de MAX DURACION se descartan
+                    //aunque primero se borran
+                    c.borrarFichero();
+                    continue;
+                }
+                //la cancion dura entre 15seg y 10 min
                 return c;
             }
             catch(Exception e){}
@@ -122,13 +133,7 @@ public class TratamientoMp3 {
         URLConnection conn = new URL(url).openConnection();
         InputStream is = conn.getInputStream();
         
-        String ruta;
-        if(Constantes.windowsOrLinux()){
-            ruta = Constantes.dameRutaWindows();
-        }
-        else{
-            ruta = Constantes.RUTA_UNIX;
-        }
+        String ruta = Utils.dameRuta();
         try (OutputStream outstream = new FileOutputStream(new File(ruta + nombre))) {
             byte[] buffer = new byte[4096];
             int len;
