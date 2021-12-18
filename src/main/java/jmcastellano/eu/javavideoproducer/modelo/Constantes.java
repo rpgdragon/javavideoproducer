@@ -35,6 +35,7 @@ public class Constantes {
     public static final long TIEMPO_ARRANQUE = 20000;
     public static final int MIN_DURACION=10;
     public static final int MAX_DURACION=600;
+    public static final String OBSLINUX = "obs --profile \"RADIO\" --scene \"RADIO\" --startstreaming --minimize-to-tray ";
 
     public enum Fichero{
         BG1("bg1.jpg"), BG2("bg2.jpg"), BG3("bg3.jpg"), BG4("bg4.jpg"), BG5("bg5.jpg"), BG6("bg6.jpg"), BG7("bg7.jpg"), BG8("bg8.jpg"), BG9("bg9.jpg"), BG10("bg10.jpg");

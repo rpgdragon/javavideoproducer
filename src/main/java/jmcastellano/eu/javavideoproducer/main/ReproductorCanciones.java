@@ -173,7 +173,7 @@ public class ReproductorCanciones {
             textocancion.setFont(font);
             textocancion.setBackground(Color.WHITE);
             textocancion.setOpaque(true);
-            textocancion.setBounds(0, 320, 638, 25);
+            textocancion.setBounds(0, 305, 638, 25);
             textocancion.setHorizontalAlignment(SwingConstants.LEFT);
             Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
             textocancion.setBorder(border);
@@ -188,7 +188,7 @@ public class ReproductorCanciones {
             textoalbum.setFont(font);
             textoalbum.setBackground(Color.WHITE);
             textoalbum.setOpaque(true);
-            textoalbum.setBounds(0, 280, 638, 25);
+            textoalbum.setBounds(0, 265, 638, 25);
             textoalbum.setHorizontalAlignment(SwingConstants.LEFT);
             Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
             textoalbum.setBorder(border);
@@ -218,16 +218,10 @@ public class ReproductorCanciones {
         p.waitFor(10, TimeUnit.SECONDS);
     }
     
-    private void inicializarOBS() throws IOException,InterruptedException {
-        Process p;
-        if(Constantes.windowsOrLinux()){
-            p = Runtime.getRuntime().exec("cmd /c start /d \"C:\\Program Files\\obs-studio\\bin\\64bit\\\" obs64.exe --startstreaming --minimize-to-tray");
-        }
-        else{
-             //TODO revisar
-            p = Runtime.getRuntime().exec("obs --startstreaming --minimize-to-tray");
-        }
-        p.waitFor(10, TimeUnit.SECONDS);
+    private void inicializarOBS() throws AWTException {
+        Logger.getInstance().outString(Constantes.INICIANDO_TRANSMISION);  
+        Robot robot = new Robot();
+        robot.keyPress(KeyEvent.VK_F6);
     }
     
     private void pararTransmision() throws AWTException {
@@ -306,7 +300,6 @@ public class ReproductorCanciones {
     }
 
     private void indicarEstadoTransmision(String estadotransmision, String marquesina, long tiempo) {
-        Logger.getInstance().outString(estadotransmision);
         ventana.setLayout(null);
         ventana.add(getTextocancion());
         getTextocancion().setHorizontalAlignment(SwingConstants.CENTER);
