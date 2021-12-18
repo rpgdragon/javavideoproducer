@@ -24,6 +24,7 @@ public class Constantes {
     private static final String RUTA_WINDOWS="C:\\Users\\%%usuario%%\\tmp\\";
     public static final String URL_STREAMING="https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/";
     public static final String URL_MENSAJES="https://raw.githubusercontent.com/rpgdragon/javavideoproducer/master/mensajes.txt";
+    public static final String URL_IMAGEN="https://raw.githubusercontent.com/rpgdragon/javavideoproducer/master/img/";
     public static final String FINALIZANDO_TRANSMISION="Finalizando programa de radio";
     public static final String INICIANDO_TRANSMISION="Iniciando programa de radio";
     public static final String SUSCRIBETE="No te olvides de suscribirte. Nos vemos.";
@@ -36,7 +37,7 @@ public class Constantes {
     public static final int MAX_DURACION=600;
 
     public enum Fichero{
-        BG1("bg1.jpg"), BG2("bg2.jpg"), BG3("bg3.jpg"), BG4("bg4.jpg"), BG5("bg5.jpg"), BG6("bg6.jpg"), BG7("bg7.jpg"), BG8("bg8.jpg"), BG9("bg9.jpg"), BG10("bg10.jpg"), BG11("bg11.jpg");
+        BG1("bg1.jpg"), BG2("bg2.jpg"), BG3("bg3.jpg"), BG4("bg4.jpg"), BG5("bg5.jpg"), BG6("bg6.jpg"), BG7("bg7.jpg"), BG8("bg8.jpg"), BG9("bg9.jpg"), BG10("bg10.jpg");
         
         private Fichero(String ruta){
             this.ruta = ruta;
@@ -82,8 +83,6 @@ public class Constantes {
                 return Fichero.BG9;
             case 10:
                 return Fichero.BG10;
-            case 11:
-                return Fichero.BG11;
         }
         return Fichero.BG1;
     }
