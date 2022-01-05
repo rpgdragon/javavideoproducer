@@ -27,6 +27,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
+import jmcastellano.eu.javavideoproducer.html.DescargarImagenes;
 import jmcastellano.eu.javavideoproducer.html.DescargarMensajes;
 import jmcastellano.eu.javavideoproducer.html.Marquesina;
 import jmcastellano.eu.javavideoproducer.html.TratamientoMp3;
@@ -66,6 +67,8 @@ public class ReproductorCanciones {
             gmp3.iniciarBusqueda();
             d = new DescargarMensajes();
             d.obtenerMensajes();
+            DescargarImagenes di = new DescargarImagenes();
+            di.obtenerImagenes();
             //vamos a esperar a que al menos este una cancion y los textos
             while(gmp3.obtener_tamano_canciones() <= 0 || d.getMensajes()==null || d.getMensajes().size() <= 0){
                 //esperamos 1 segundo
@@ -155,8 +158,7 @@ public class ReproductorCanciones {
     private void cambiarFondo(){
         if(!cargainicial){
             Fichero f1 = Constantes.randomFichero();
-            URL url = this.getClass().getResource("/images/" + f1.getRuta());
-            fondo = new JLabel(new ImageIcon(url));
+            fondo = new JLabel(new ImageIcon(Utils.dameRuta() + f1.getRuta()));
             ventana.setContentPane(fondo);
         }
         else{
@@ -171,7 +173,7 @@ public class ReproductorCanciones {
             textocancion.setFont(font);
             textocancion.setBackground(Color.WHITE);
             textocancion.setOpaque(true);
-            textocancion.setBounds(0, 290, 638, 25);
+            textocancion.setBounds(0, 305, 638, 25);
             textocancion.setHorizontalAlignment(SwingConstants.LEFT);
             Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
             textocancion.setBorder(border);
@@ -186,7 +188,7 @@ public class ReproductorCanciones {
             textoalbum.setFont(font);
             textoalbum.setBackground(Color.WHITE);
             textoalbum.setOpaque(true);
-            textoalbum.setBounds(0, 250, 638, 25);
+            textoalbum.setBounds(0, 265, 638, 25);
             textoalbum.setHorizontalAlignment(SwingConstants.LEFT);
             Border border = BorderFactory.createLineBorder(Color.BLACK, 2);
             textoalbum.setBorder(border);
@@ -216,16 +218,10 @@ public class ReproductorCanciones {
         p.waitFor(10, TimeUnit.SECONDS);
     }
     
-    private void inicializarOBS() throws IOException,InterruptedException {
-        Process p;
-        if(Constantes.windowsOrLinux()){
-            p = Runtime.getRuntime().exec("cmd /c start /d \"C:\\Program Files\\obs-studio\\bin\\64bit\\\" obs64.exe --startstreaming --minimize-to-tray");
-        }
-        else{
-             //TODO revisar
-            p = Runtime.getRuntime().exec("obs --startstreaming --minimize-to-tray");
-        }
-        p.waitFor(10, TimeUnit.SECONDS);
+    private void inicializarOBS() throws AWTException {
+        Logger.getInstance().outString(Constantes.INICIANDO_TRANSMISION);  
+        Robot robot = new Robot();
+        robot.keyPress(KeyEvent.VK_F6);
     }
     
     private void pararTransmision() throws AWTException {
@@ -233,15 +229,36 @@ public class ReproductorCanciones {
         Robot robot = new Robot();
         robot.keyPress(KeyEvent.VK_F7);
     }
+    
+    private int dimeTamanoPixelesTexto(String texto){
+        if(texto==null || texto.isEmpty()){
+            return 10;
+        }
+        if(texto.length() < 30){
+            return 11;
+        }
+        if(texto.length() < 50){
+            return 10;
+        }
+        if(texto.length() < 70){
+            return 9;
+        }
+        return 7;
+    }
 
     private void actualizarCancionVentana(Cancion cancionactual) {
+        cancionactual.setNombre_album(cancionactual.getNombre_album().replaceAll("\\<*\\>", "").trim());
+        cancionactual.setNombre_cancion(cancionactual.getNombre_cancion().replaceAll("\\<.*?\\>", "").trim());
+        int cancion_tamano=dimeTamanoPixelesTexto(cancionactual.getNombre_cancion());
+        int album_tamano=dimeTamanoPixelesTexto(cancionactual.getNombre_album());
+        
         ventana.setLayout(null);
         ventana.add(getTextocancion());
         ventana.add(getTextoalbum());
         getTextocancion().setHorizontalAlignment(SwingConstants.LEFT);
-        String album = "<html><span style=\"font-family:Arial;font-size:13px;\"><b> &nbsp;ALBUM: </b></span>" + cancionactual.getNombre_album() + "</html>";
+        String album = "<html><span style=\"font-family:Arial;font-size:13px;\"><b> &nbsp;ALBUM: </b></span><span style=\"font-size:" + album_tamano + "px\"> " + cancionactual.getNombre_album() + "</span></html>";
         getTextoalbum().setText(album);
-        String cancion = "<html><span style=\"font-family:Arial;font-size:13px;\"><b> &nbsp;CANCION: </b></span>" + cancionactual.getNombre_cancion() + "</html>";
+        String cancion = "<html><span style=\"font-family:Arial;font-size:13px;\"><b> &nbsp;CANCION: </b></span><span style=\"font-size:" + cancion_tamano + "px\"> " + cancionactual.getNombre_cancion() + "</span></html>";
         getTextocancion().setText(cancion);
         ventana.add(getMarquesina());
         getMarquesina().setText(d.dameMensajeAleatorio());
@@ -283,7 +300,6 @@ public class ReproductorCanciones {
     }
 
     private void indicarEstadoTransmision(String estadotransmision, String marquesina, long tiempo) {
-        Logger.getInstance().outString(estadotransmision);
         ventana.setLayout(null);
         ventana.add(getTextocancion());
         getTextocancion().setHorizontalAlignment(SwingConstants.CENTER);
