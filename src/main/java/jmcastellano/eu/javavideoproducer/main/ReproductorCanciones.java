@@ -36,6 +36,7 @@ import jmcastellano.eu.javavideoproducer.modelo.Constantes;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes.Fichero;
 import jmcastellano.eu.javavideoproducer.utils.Logger;
 import jmcastellano.eu.javavideoproducer.utils.Utils;
+import org.jsoup.Jsoup;
 
 /**
  *
@@ -247,8 +248,8 @@ public class ReproductorCanciones {
     }
 
     private void actualizarCancionVentana(Cancion cancionactual) {
-        cancionactual.setNombre_album(cancionactual.getNombre_album().replaceAll("\\<*\\>", "").trim());
-        cancionactual.setNombre_cancion(cancionactual.getNombre_cancion().replaceAll("\\<.*?\\>", "").trim());
+        cancionactual.setNombre_album(Jsoup.parse(cancionactual.getNombre_album()).text().trim());
+        cancionactual.setNombre_cancion(Jsoup.parse(cancionactual.getNombre_cancion()).text().trim());
         int cancion_tamano=dimeTamanoPixelesTexto(cancionactual.getNombre_cancion());
         int album_tamano=dimeTamanoPixelesTexto(cancionactual.getNombre_album());
         
