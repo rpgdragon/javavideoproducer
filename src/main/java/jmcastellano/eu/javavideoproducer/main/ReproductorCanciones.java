@@ -223,12 +223,16 @@ public class ReproductorCanciones {
         Logger.getInstance().outString(Constantes.INICIANDO_TRANSMISION);  
         Robot robot = new Robot();
         robot.keyPress(KeyEvent.VK_F6);
+        robot.delay(500);
+        robot.keyRelease(KeyEvent.VK_F6);
     }
     
     private void pararTransmision() throws AWTException {
         Logger.getInstance().outString(Constantes.DETENIENDO);  
         Robot robot = new Robot();
         robot.keyPress(KeyEvent.VK_F7);
+        robot.delay(500);
+        robot.keyRelease(KeyEvent.VK_F7);
     }
     
     private int dimeTamanoPixelesTexto(String texto){
