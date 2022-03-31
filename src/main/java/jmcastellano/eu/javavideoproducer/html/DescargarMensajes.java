@@ -5,54 +5,53 @@
  */
 package jmcastellano.eu.javavideoproducer.html;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes;
 
 /**
  *
  * @author rpgdragon
  */
-public class DescargarMensajes {
+public class DescargarMensajes extends DescargarTexto {
     
     private ArrayList<String> mensajes;
-    private boolean enEjecucion = false;
     
     public DescargarMensajes(){
-        
-    }
-    
-    public void obtenerMensajes(){
-        if(mensajes==null || mensajes.isEmpty()){
-            enEjecucion = true;
-            mensajes = new ArrayList<>();
-            Thread t = new Thread(() -> {
-                try {
-                    URL url = new URL(Constantes.URL_MENSAJES);
-                    Scanner s = new Scanner(url.openStream(),"UTF-8");
-                    while(s.hasNextLine()){
-                        String cad = s.nextLine();
-                        mensajes.add(cad);
-                    }
-                } catch(Exception e){}
-                finally{
-                    enEjecucion = false;
-                }
-            });
-            t.start();
-        }
+        super(Constantes.URL_MENSAJES);
     }
 
-    public ArrayList<String> getMensajes() {
-        return mensajes;
-    }
-
-    public boolean isEnEjecucion() {
-        return enEjecucion;
-    }
+   /**
+   * Función que nos permite resetear
+   */
+   public void reset(){
+       this.setEnEjecucion(false);
+       this.mensajes = null;
+   }
     
+   @Override
+	public boolean hayDatosPrevios() {
+		if(mensajes==null || mensajes.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public void tramitarDescarga(String linea) {
+		if(linea==null || linea.isEmpty()) {
+			return;
+		}
+		if(mensajes==null) {
+			mensajes = new ArrayList<String>();
+		}
+        mensajes.add(linea);
+	}
+
+    /**
+     * Permite recuperar un mensaje aleatorio para mostrarse
+     * @return
+     */
     public String dameMensajeAleatorio(){
         if(mensajes!=null && !mensajes.isEmpty()){
             Random r = new Random();

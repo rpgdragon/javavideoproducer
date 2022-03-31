@@ -5,61 +5,86 @@
  */
 package jmcastellano.eu.javavideoproducer.html;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.HashMap;
+
+import jmcastellano.eu.javavideoproducer.modelo.Cancion;
 import jmcastellano.eu.javavideoproducer.modelo.Constantes;
 
 /**
  *
  * @author rpgdragon
  */
-public class DescargarMensajes {
+public class DescargarCancionesBan extends DescargarTexto {
     
-    private ArrayList<String> mensajes;
-    private boolean enEjecucion = false;
+    private HashMap<String,ArrayList<String>> canciones;
     
-    public DescargarMensajes(){
-        
-    }
-    
-    public void obtenerMensajes(){
-        if(mensajes==null || mensajes.isEmpty()){
-            enEjecucion = true;
-            mensajes = new ArrayList<>();
-            Thread t = new Thread(() -> {
-                try {
-                    URL url = new URL(Constantes.URL_MENSAJES);
-                    Scanner s = new Scanner(url.openStream(),"UTF-8");
-                    while(s.hasNextLine()){
-                        String cad = s.nextLine();
-                        mensajes.add(cad);
-                    }
-                } catch(Exception e){}
-                finally{
-                    enEjecucion = false;
-                }
-            });
-            t.start();
-        }
+    public DescargarCancionesBan(){
+        super(Constantes.URL_CANCIONES);
     }
 
-    public ArrayList<String> getMensajes() {
-        return mensajes;
-    }
+	@Override
+	public boolean hayDatosPrevios() {
+		if(canciones==null || canciones.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
 
-    public boolean isEnEjecucion() {
-        return enEjecucion;
-    }
+	@Override
+	public void reset() {
+		this.setEnEjecucion(false);
+		this.canciones = null;
+	}
+
+	@Override
+	public void tramitarDescarga(String linea) {
+		ArrayList<String> cancionesalbum;
+		if(linea==null || linea.isEmpty() || linea.split(";;;;").length!=2) {
+			return;
+		}
+		if(canciones==null) {
+			canciones = new HashMap<>();
+		}
+		String[] arr = linea.split(";;;;");
+		//buscamos si dentro del hash existe un album con ese mismo nombre
+		if(canciones.containsKey(arr[0])) {
+			cancionesalbum = canciones.get(arr[0]);
+		}
+		else {
+			cancionesalbum = new ArrayList<>();
+			canciones.put(arr[0], cancionesalbum);
+		}
+		cancionesalbum.add(arr[1]);
+	}
+	
+	/**
+	 * Método que nos permite saber si la cancion suministrada esta baneada o no
+	 * @param c
+	 * @return
+	 */
+	public boolean esCancionProhibida(Cancion c) {
+		//si no hay canciones, entonces no esta baneada
+	   if(canciones==null || canciones.isEmpty()) {
+		   return false;
+	   }
+	   
+	   //Si el album no esta, no esta baneada
+	   if(!canciones.containsKey(c.getNombre_album())) {
+		   return false;
+	   }
+	   
+	   
+	   
+	   //Si llega aqui es que el album existe, hay que mirar por canciones
+	   for(String nombreCancion: canciones.get(c.getNombre_album())) {
+		   if(c.getNombre_cancion().matches(nombreCancion)) {
+			   return true;
+		   }
+	   }
+	   return false;
+			
+	}
+
     
-    public String dameMensajeAleatorio(){
-        if(mensajes!=null && !mensajes.isEmpty()){
-            Random r = new Random();
-            int tam = mensajes.size();
-            
-           return mensajes.get(r.nextInt(tam));
-        }
-        return "";
-    }
 }

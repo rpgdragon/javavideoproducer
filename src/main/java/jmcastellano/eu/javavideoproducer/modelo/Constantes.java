@@ -5,8 +5,6 @@
  */
 package jmcastellano.eu.javavideoproducer.modelo;
 
-import java.util.Random;
-
 /**
  *
  * @author rpgdragon
@@ -20,11 +18,14 @@ public class Constantes {
     public static final String HREF= "href=";
     public static final String SPAN_CLASS="<span class";
     public static final String CADENA_URL_CANCION="<p><a style=\"color: #21363f;\" href=\"https://vgmsite.com/soundtracks/";
-    public static final String RUTA_UNIX="/home/pi/tmp/";
+    public static final String RUTA_UNIX="/home/ubuntu/tmp/";
     private static final String RUTA_WINDOWS="C:\\Users\\%%usuario%%\\tmp\\";
     public static final String URL_STREAMING="https://studio.youtube.com/channel/UCEEhD4GCgmqtzhpiKNcq0tQ/livestreaming/";
     public static final String URL_MENSAJES="https://raw.githubusercontent.com/rpgdragon/javavideoproducer/master/mensajes.txt";
+    public static final String URL_CANCIONES="https://raw.githubusercontent.com/rpgdragon/javavideoproducer/master/canciones.txt";
     public static final String URL_IMAGEN="https://raw.githubusercontent.com/rpgdragon/javavideoproducer/master/img/";
+    public static final String RUTA_UNIX_BASICA="/home/ubuntu/radio/";
+    public static final String RUTA_WINDOWS_BASICA="C:\\Users\\%%usuario%%\\radio\\";
     public static final String FINALIZANDO_TRANSMISION="Finalizando programa de radio";
     public static final String INICIANDO_TRANSMISION="Iniciando programa de radio";
     public static final String SUSCRIBETE="No te olvides de suscribirte. Nos vemos.";
@@ -34,11 +35,18 @@ public class Constantes {
     public static final long TIEMPO_DESCONEXION = 10000;
     public static final long TIEMPO_ARRANQUE = 20000;
     public static final int MIN_DURACION=10;
-    public static final int MAX_DURACION=600;
+    public static final int MAX_DURACION=1200;
     public static final String OBSLINUX = "obs --profile \"RADIO\" --scene \"RADIO\" --startstreaming --minimize-to-tray ";
+    public static String COMANDO_FFMPEG="ffmpeg -f x11grab -s \"1280x680\" -r \"20\" -i :0+0,80 -f alsa -ac 2 -i default -acodec libmp3lame -ab 128k -ar 44100 -threads 0 -b:v 2500K -f flv \"rtmp://a.rtmp.youtube.com/live2/";
+    public static String NOMBRE_PROGRAMA="Programming and Games Radio";
+    public static String TITULO_YOUTUBE="Radio de videojuegos/videogames 24/7";
+    public static String PARAMETROS=" -f alsa -ac 2 -i default -acodec libmp3lame -ab 128k -ar 44100 -threads 0 -b:v 2500K ";
+    public static final int CANCIONES_ESPERA_MENSAJES=10;
+    public static final int CANCIONES_ESPERA_CANCIONES=200;
+    public static final long MAX_TIEMPO_MARQUESINA=20000;
 
     public enum Fichero{
-        BG1("bg1.jpg"), BG2("bg2.jpg"), BG3("bg3.jpg"), BG4("bg4.jpg"), BG5("bg5.jpg"), BG6("bg6.jpg"), BG7("bg7.jpg"), BG8("bg8.jpg"), BG9("bg9.jpg"), BG10("bg10.jpg");
+        BG1("./bg1.gif");
         
         private Fichero(String ruta){
             this.ruta = ruta;
@@ -60,34 +68,6 @@ public class Constantes {
         return os.toLowerCase().contains("windows");
     }
     
-    public static Fichero randomFichero(){
-        Random rand = new Random();
-        int num = rand.nextInt(Fichero.values().length)+1;
-        switch(num){
-            case 1:
-                return Fichero.BG1;
-            case 2:
-                return Fichero.BG2;
-            case 3:
-                return Fichero.BG3;
-            case 4:
-                return Fichero.BG4;
-            case 5:
-                return Fichero.BG5;
-            case 6:
-                return Fichero.BG6;
-            case 7:
-                return Fichero.BG7;
-            case 8:
-                return Fichero.BG8;
-            case 9:
-                return Fichero.BG9;
-            case 10:
-                return Fichero.BG10;
-        }
-        return Fichero.BG1;
-    }
-    
     public static void esperar(int i) {
         try{
             Thread.sleep(i);
@@ -97,5 +77,9 @@ public class Constantes {
     
     public static String dameRutaWindows(){
         return RUTA_WINDOWS.replaceAll("%%usuario%%",  System.getProperty("user.name"));
+    }
+
+    public static String dameRutaWindowsBasic(){
+        return RUTA_WINDOWS_BASICA.replaceAll("%%usuario%%",  System.getProperty("user.name"));
     }
 }

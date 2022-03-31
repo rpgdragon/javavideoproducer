@@ -16,15 +16,11 @@ public class Main {
     private static boolean isProduction = true;
     
     public static void main(String[] args){
-        int tiempo = 3;
         if(args!=null && args.length > 0 && args[0].equals("false")){
             isProduction = false;
         }
-        if(args!=null && args.length > 1){
-            tiempo = Integer.parseInt(args[1]);
-        }
-       Logger.getInstance().outString("Iniciando Javavideoproducer:" + tiempo + " " + isProduction);
-       ReproductorCanciones rc = new ReproductorCanciones(tiempo);
+       Logger.getInstance().outString("Iniciando Javavideoproducer:" + isProduction);
+       ReproductorCanciones rc = new ReproductorCanciones();
        rc.iniciar();
     }
 

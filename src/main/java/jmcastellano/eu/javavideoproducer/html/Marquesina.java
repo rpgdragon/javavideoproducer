@@ -15,7 +15,11 @@ import java.awt.Color;
  */
 public class Marquesina extends JLabel {
     
-   public static int LEFT_TO_RIGHT = 1;  
+   /**
+	 * 
+	 */
+	private static final long serialVersionUID = -7531412382260951998L;
+public static int LEFT_TO_RIGHT = 1;  
    public static int RIGHT_TO_LEFT = 2;    
    private final int Option;  
    private final int Speed;
